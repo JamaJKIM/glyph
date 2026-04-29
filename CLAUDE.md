@@ -68,7 +68,7 @@ UserPromptSubmit hook → glyph-mode-tracker.js
 
 To add native Ink-rendered fenced blocks (` ```glyph:tree `, ` ```glyph:flow `, etc.):
 
-1. Fork [Anthropic Claude Code](https://github.com/JamaJKIM/claude-code) (leaked source breakdown).
+1. Fork [Anthropic Claude Code](https://github.com/jamesjoonkim/claude-code) (leaked source breakdown).
 2. Edit `components/Markdown.tsx` line 144 dispatch to recognize `code` tokens with `lang.startsWith("glyph:")`.
 3. Add `<GlyphBlock>` component modeled after `MarkdownTable.tsx` — uses `Box`, `Ansi`, `useTheme`, `useTerminalSize`, `stringWidth`, `wrapAnsi` from `ink.js`.
 4. Variants: `tree` (decision tree from indented bullets), `flow` (boxes + arrows), `chart` (bar chart), `spark` (sparkline), `matrix` (2x2).
@@ -110,8 +110,8 @@ If future contributors want to expand into HUD/memory/validation/diagrams — **
 
 ## External references
 
-- Glyph repo: https://github.com/JamaJKIM/glyph (private until benchmarks ship)
-- Leaked CC source for Track 2: https://github.com/JamaJKIM/claude-code (forked from `Kuberwastaken/claurst`)
+- Glyph repo: https://github.com/jamesjoonkim/glyph (private until benchmarks ship)
+- Leaked CC source for Track 2: https://github.com/jamesjoonkim/claude-code (forked from `Kuberwastaken/claurst`)
 - Source dispatch to patch for Track 2: `components/Markdown.tsx` line 143-151
 - Caveman repo (lineage credit): https://github.com/JuliusBrussee/caveman
 - Local symlink: `~/.claude/plugins/marketplaces/glyph` → `~/Documents/GitHub/glyph`
@@ -141,7 +141,7 @@ echo "off" > ~/.claude/.glyph-mode
 Open tasks in priority order:
 
 1. **Run benchmarks** — `cd benchmarks && uv run python llm_run.py && uv run --with tiktoken python measure.py`. Validates the README claims.
-2. **Flip public** — `gh repo edit JamaJKIM/glyph --visibility public --accept-visibility-change-consequences` after benchmarks back the claims.
+2. **Flip public** — `gh repo edit jamesjoonkim/glyph --visibility public --accept-visibility-change-consequences` after benchmarks back the claims.
 3. **Submit to marketplace** — once public, list in awesome-claude-code or anthropic-plugins-official.
 4. **Track 2 fork** — only if Track 1 has user pull. See `docs/track-2-fork-design.md`.
 5. **Don't expand scope** — see "Why glyph stays narrow" above.

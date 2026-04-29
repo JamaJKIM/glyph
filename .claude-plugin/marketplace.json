@@ -4,7 +4,7 @@
   "description": "Visual + terse output mode for Claude Code. Cuts ~75% tokens (caveman lineage) AND replaces prose with ASCII diagrams, tables, trees, sparklines. 3-5x faster to scan.",
   "owner": {
     "name": "James Kim",
-    "url": "https://github.com/JamaJKIM"
+    "url": "https://github.com/jamesjoonkim"
   },
   "plugins": [
     {

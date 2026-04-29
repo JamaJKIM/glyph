@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/JamaJKIM/glyph/stargazers"><img src="https://img.shields.io/github/stars/JamaJKIM/glyph?style=flat&color=yellow" alt="Stars"></a>
-  <a href="https://github.com/JamaJKIM/glyph/commits/main"><img src="https://img.shields.io/github/last-commit/JamaJKIM/glyph?style=flat" alt="Last Commit"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/JamaJKIM/glyph?style=flat" alt="License"></a>
+  <a href="https://github.com/jamesjoonkim/glyph/stargazers"><img src="https://img.shields.io/github/stars/jamesjoonkim/glyph?style=flat&color=yellow" alt="Stars"></a>
+  <a href="https://github.com/jamesjoonkim/glyph/commits/main"><img src="https://img.shields.io/github/last-commit/jamesjoonkim/glyph?style=flat" alt="Last Commit"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/jamesjoonkim/glyph?style=flat" alt="License"></a>
   <a href="https://github.com/JuliusBrussee/caveman"><img src="https://img.shields.io/badge/built%20on-caveman-orange" alt="Built on caveman"></a>
 </p>
 
@@ -163,7 +163,7 @@ One command. Auto-activates on every session after that.
 
 | Agent | Install |
 |-------|---------|
-| **Claude Code** | `claude plugin marketplace add JamaJKIM/glyph && claude plugin install glyph@glyph` |
+| **Claude Code** | `claude plugin marketplace add jamesjoonkim/glyph && claude plugin install glyph@glyph` |
 | Codex | _(planned)_ |
 | Gemini CLI | _(planned)_ |
 | Cursor / Windsurf | _(planned)_ |
@@ -245,7 +245,7 @@ If glyph still isn't responding visually, run `/reload-plugins` in CC, or restar
 For users who don't want the marketplace + plugin system, glyph ships a self-contained installer:
 
 ```bash
-git clone https://github.com/JamaJKIM/glyph
+git clone https://github.com/jamesjoonkim/glyph
 cd glyph
 bash hooks/install.sh
 ```

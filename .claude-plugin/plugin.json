@@ -4,10 +4,10 @@
   "description": "Visual + terse output mode. Caveman terseness fused with ASCII diagrams, tables, trees, sparklines. Speak less. Show more.",
   "author": {
     "name": "James Kim",
-    "url": "https://github.com/JamaJKIM"
+    "url": "https://github.com/jamesjoonkim"
   },
   "license": "MIT",
-  "homepage": "https://github.com/JamaJKIM/glyph",
+  "homepage": "https://github.com/jamesjoonkim/glyph",
   "hooks": {
     "SessionStart": [
       {

@@ -29,7 +29,7 @@ General
 ## Primary Link
 
 ```
-https://github.com/JamaJKIM/glyph
+https://github.com/jamesjoonkim/glyph
 ```
 
 ## Description (≤350 chars target)
@@ -53,7 +53,7 @@ James Kim
 ## Author Link
 
 ```
-https://github.com/JamaJKIM
+https://github.com/jamesjoonkim
 ```
 
 ## Active (still maintained?)
@@ -71,7 +71,7 @@ None. Pure stdout/stdin via Claude Code hook system. No network calls. No teleme
 ## Installation
 
 ```
-1. claude plugin marketplace add JamaJKIM/glyph
+1. claude plugin marketplace add jamesjoonkim/glyph
 2. claude plugin install glyph@glyph
 3. /glyph     (activate; default is opt-in off)
 ```

@@ -16,7 +16,7 @@ normal claude:  872 tokens, 7.2/10 readability
 caveman terse:  458 tokens, 8.4/10
 glyph (mine):   495 tokens, 9.0/10 ⭐
 
-shipped: github.com/JamaJKIM/glyph
+shipped: github.com/jamesjoonkim/glyph
 ```
 
 **Tweet 2 (reply):**
@@ -48,13 +48,13 @@ worth it for the daily "compare X vs Y" flow.
 **Tweet 4 (reply, install + cta):**
 ```
 install:
-claude plugin marketplace add JamaJKIM/glyph
+claude plugin marketplace add jamesjoonkim/glyph
 claude plugin install glyph@glyph
 /glyph
 
 built on @JuliusBrussee's caveman. credits in LICENSE.
 
-repo, benchmarks, design docs all open: github.com/JamaJKIM/glyph
+repo, benchmarks, design docs all open: github.com/jamesjoonkim/glyph
 ```
 
 ---
@@ -77,7 +77,7 @@ glyph:          | strategy | latency | cost | invalidation |
                 
                 538 tokens. decide in 2 sec.
 
-glyph: github.com/JamaJKIM/glyph
+glyph: github.com/jamesjoonkim/glyph
 ```
 
 ---
@@ -96,7 +96,7 @@ but most dev questions aren't narrative. they're:
 
 each has a natural visual shape that prose obscures.
 
-glyph picks the shape: github.com/JamaJKIM/glyph
+glyph picks the shape: github.com/jamesjoonkim/glyph
 ```
 
 **Tweet 2 (reply):**

@@ -177,7 +177,7 @@ Svelte 5    ███████████████  16 KB
 ## Build sequence
 
 ```
-1. clone https://github.com/JamaJKIM/claude-code (leaked source)
+1. clone https://github.com/jamesjoonkim/claude-code (leaked source)
 2. set up Ink + React build pipeline locally
 3. add GlyphBlock.tsx + GlyphTree.tsx
 4. patch Markdown.tsx dispatch (3 lines)
