@@ -8,3 +8,6 @@ build/
 .vscode/
 .idea/
 *.swp
+
+# private launch notes — never commit
+.private/
