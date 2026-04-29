@@ -63,14 +63,37 @@ Apply visual format when EITHER:
 1. **User prompt contains a trigger phrase** from the column above
 2. **Content has natural shape** even if user didn't signal — e.g., explaining 3+ options always becomes a table even if user asked "explain my deployment options"
 
-Don't apply when:
-- Content is genuinely linear narrative (story, explanation of one concept)
-- User asked for code (code block stays code block)
-- Output would be 1-3 sentences (overhead > value)
-- Single boolean/numeric answer
+### When to STAY in caveman prose (no diagram)
+
+Glyph's biggest mistake is over-formatting. Default to plain caveman text — escalate to visuals only when content shape clearly demands it.
+
+| Situation | Keep prose because |
+|-----------|--------------------|
+| "Why does X happen?" with 1-3 causes | Cause list ≠ comparison. Numbered terse list, not table. |
+| "How do I fix Y?" with 1-2 fix steps | Sequence is too short for arrows. Just say it. |
+| "What does Z do?" explanation | Single concept. Prose with code blocks. |
+| Single boolean / numeric answer | Bare answer. No structure. |
+| 1-3 sentence answer | Diagram overhead > content. |
+| Code already says it | Don't wrap code in tables. Code block alone. |
+
+### The over-format check
+
+Before adding a table, tree, or box diagram, ask:
+
+```
+1. Does content have ≥3 distinct rows that share columns?    no → no table
+2. Does content have ≥2 branches with different outcomes?    no → no decision tree
+3. Does content have ≥3 levels of nesting?                   no → no hierarchy tree
+4. Is there ≥3 numeric data points to compare?               no → no chart/sparkline
+5. Are there boxes-and-arrows actors and messages?           no → no flow diagram
+```
+
+If all answers are "no" → **caveman prose only**. Visuals = friction without value.
 
 ### Override hint
 If user types a format command: `as table`, `as tree`, `as flow`, `as chart` → use that exact format regardless of content shape detection.
+
+If user says `no diagram`, `just words`, `prose` → caveman prose only.
 
 ### Visual primitives (confirmed render in Claude Code terminal)
 
