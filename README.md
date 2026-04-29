@@ -159,7 +159,7 @@ Real benchmark prompt: *"compare three caching strategies for a high-traffic API
 
 ## Install
 
-Currently Claude Code only. Other agents coming after Track 1 validation.
+One command. Auto-activates on every session after that.
 
 | Agent | Install |
 |-------|---------|
@@ -168,7 +168,24 @@ Currently Claude Code only. Other agents coming after Track 1 validation.
 | Gemini CLI | _(planned)_ |
 | Cursor / Windsurf | _(planned)_ |
 
-After install: `/glyph` to activate (default is **off** — opt-in).
+**Auto-activation built in.** glyph fires on every SessionStart via Claude Code's hook system — no `/glyph` typing each session. The statusline shows `[GLYPH]`, `[GLYPH:LITE]`, or `[GLYPH:ULTRA]` so you always know which mode is active.
+
+Switch level any time: `/glyph lite | full | ultra`. Disable: `stop glyph` or `normal mode`.
+
+### What you get
+
+| Feature | Status |
+|---------|:------:|
+| Visual + terse output mode | ✔ |
+| Auto-activate every session | ✔ |
+| `/glyph` slash command | ✔ |
+| Mode switching (lite / full / ultra) | ✔ |
+| Statusline badge | ✔ |
+| Sub-skills: commit / review / debug / status / scaffold / render / explain | ✔ |
+| Excalidraw MCP routing for big diagrams | ✔ |
+| Mermaid MCP routing for sequence / state | ✔ |
+| OSC 8 hyperlinks (clickable file refs in capable terminals) | ✔ |
+| Truecolor / 256-color charts | ✔ |
 
 **Standalone (no plugin system):**
 ```bash
@@ -252,6 +269,7 @@ Telegraphic. Arrows for cause.
 | **glyph-status** | Project state at a glance (git, tests, build, deps) as a table | `/glyph-status` |
 | **glyph-scaffold** | Idea → ASCII spec card (file tree, data flow, sequence). Planning before coding | `/glyph-scaffold` |
 | **glyph-render** | Routes "draw this big" to excalidraw-mcp or mermaid-mcp. Falls back to ASCII inline | `/glyph-render` |
+| **glyph-explain** | Force a visual-first explanation of any concept / library / pattern | `/glyph-explain <topic>` |
 
 ## Format-selection rule
 

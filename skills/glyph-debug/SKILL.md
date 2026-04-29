@@ -11,7 +11,7 @@ description: >
 ## Format
 
 ```
-🔴 <one-line bug summary>
+✖ <one-line bug summary>
    ├─ where:  <file>:<line> in <function>
    ├─ why:    <root cause in caveman>
    └─ fix:    <smallest change> (or "needs investigation: <what to check>")
@@ -43,7 +43,7 @@ TypeError: __init__() missing 1 required positional argument: 'user_id'
 
 **Output:**
 ```
-🔴 Task() missing required arg 'user_id'
+✖ Task() missing required arg 'user_id'
    ├─ where:  app/services/task_service.py:42 in create()
    ├─ why:    enriched dict has no user_id key. Probably stripped during enrichment.
    └─ fix:    pass user.uid into enriched, or set user_id=user.uid in Task() ctor.
@@ -61,7 +61,7 @@ TypeError: Cannot read properties of undefined (reading 'name')
 
 **Output:**
 ```
-🔴 "Cannot read properties of undefined (reading 'name')"
+✖ "Cannot read properties of undefined (reading 'name')"
    ├─ where:  src/features/assignments/AssignmentList.tsx:42
    ├─ why:    accessed .name on undefined. Likely user/data not loaded yet.
    └─ fix:    add guard: `user?.name` or early return on `if (!user)`.
@@ -79,7 +79,7 @@ TS2322: Type 'string' is not assignable to type 'number'.
 
 **Output:**
 ```
-🔴 TS2322: size="42" is string, expected number
+✖ TS2322: size="42" is string, expected number
    ├─ where:  src/components/Button.tsx:29
    ├─ why:    JSX string literal vs typed numeric prop.
    └─ fix:    `size={42}` (curly braces, not quotes).
@@ -90,7 +90,7 @@ TS2322: Type 'string' is not assignable to type 'number'.
 If you cannot identify root cause from trace alone:
 
 ```
-🔴 <error message verbatim>
+✖ <error message verbatim>
    ├─ where:  <deepest user frame>
    ├─ why:    needs investigation
    └─ check:  <2-3 things to inspect, in caveman bullets>
@@ -99,7 +99,7 @@ If you cannot identify root cause from trace alone:
 Example:
 
 ```
-🔴 "ECONNREFUSED 127.0.0.1:5432"
+✖ "ECONNREFUSED 127.0.0.1:5432"
    ├─ where:  app/db/pool.ts:12
    ├─ why:    needs investigation
    └─ check:  postgres running? port 5432? pg_hba.conf allows local?
@@ -110,8 +110,19 @@ Example:
 When trace has >1 distinct error (rare — usually cascading), list all:
 
 ```
-🔴 main:    <primary error>
-🟡 cascade: <secondary triggered by main>
+✖ main:    <primary error>
+⚠ cascade: <secondary triggered by main>
+```
+
+## Make file refs clickable
+
+When citing a file:line in `where:`, wrap it as a markdown link with a `file:///` URL so terminals supporting OSC 8 hyperlinks make it click-to-open:
+
+```
+✖ "Cannot read properties of undefined (reading 'name')"
+   ├─ where:  [src/features/assignments/AssignmentList.tsx:42](file:///abs/path/AssignmentList.tsx:42)
+   ├─ why:    accessed .name on undefined.
+   └─ fix:    add guard: `user?.name`.
 ```
 
 ## Auto-clarity exception

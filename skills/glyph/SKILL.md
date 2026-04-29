@@ -205,6 +205,94 @@ When calling an MCP, glyph still emits a one-line summary in chat ("→ renderin
    Low effort  ─  High effort
 ```
 
+## Hyperlinks (OSC 8) — make refs clickable
+
+Claude Code passes through OSC 8 hyperlink escape sequences in iTerm2, kitty, alacritty, ghostty, Hyper, and inside tmux. Use markdown link syntax — Ink converts it.
+
+| Use case | Glyph syntax | Result in capable terminals |
+|----------|--------------|------------------------------|
+| File path with line number | `[src/auth.ts:42](file:///abs/path/auth.ts:42)` | Clickable, jumps to file:line |
+| GitHub issue / PR | `[#1234](https://github.com/org/repo/pull/1234)` | Clickable, opens browser |
+| Doc reference | `[results.md](file:///abs/path/results.md)` | Clickable file link |
+| External URL | `[Anthropic docs](https://docs.anthropic.com/...)` | Clickable web link |
+
+Rule: when emitting any file path, line ref, PR/issue number, or URL inside a glyph table or list, wrap it in markdown link syntax with the absolute file URL or web URL. Cost is ~20 chars per link, payoff is 1-click navigation.
+
+Example glyph status table with links:
+```
+| File | Issue |
+|------|-------|
+| [auth.ts:42](file:///x/auth.ts) | [#1234](https://github.com/...) |
+```
+
+## Status indicators — figures vocab over emoji
+
+Claude Code uses the `figures` npm package internally. To match its native look, prefer these glyphs over generic emoji:
+
+| Use | Prefer | Avoid | Reason |
+|-----|--------|-------|--------|
+| pass / ok | `✔` | `✅` | matches CC's task list rendering |
+| fail | `✖` | `❌` | thinner, less visual weight |
+| warning | `⚠` | `⚠️` | non-emoji variant, no extra width |
+| info | `ℹ` | `🔵` | clean, theme-neutral |
+| select / pointer | `❯` | `→` (when emphasizing selection) | matches CC menus |
+| star / pick | `★` | `⭐` | text variant, predictable width |
+| bullet | `●` | `•` | matches CC list rendering |
+| arrow | `→ ← ↑ ↓` | `▶ ◀ ▲ ▼` (only for play-state) | text-flow vs UI-state |
+
+Emoji still OK for color emphasis (🔴🟡🟢) when severity needs to pop. But default to `figures` glyphs for routine status to keep visual vocabulary consistent with CC.
+
+## Truecolor / gradient via raw ANSI
+
+Claude Code's Ink renderer parses ANSI escape codes and converts them to React Text spans with color attributes. A skill can emit raw ANSI in its output and Ink renders the colors.
+
+Supported in skill output:
+
+| Escape | What |
+|--------|------|
+| `\x1b[31m...\x1b[0m` | 8-color (red) |
+| `\x1b[38;5;208m...\x1b[0m` | 256-color (orange) |
+| `\x1b[38;2;255;128;0m...\x1b[0m` | truecolor (24-bit) |
+| `\x1b[1m...\x1b[22m` | bold |
+| `\x1b[2m...\x1b[22m` | dim |
+| `\x1b[3m...\x1b[23m` | italic |
+| `\x1b[4m...\x1b[24m` | underline |
+| `\x1b]8;;URL\x1b\\text\x1b]8;;\x1b\\` | hyperlink (use markdown form instead) |
+
+Use case: gradient bars and sparklines that intensify with severity.
+
+```
+load    ░ ▒ ▓ █  (cool → hot, monochrome — always works)
+load    [38;5;46m█[38;5;82m█[38;5;118m█[38;5;154m█[38;5;220m█[38;5;208m█[38;5;202m█[38;5;196m█[0m
+        green ─────────────────────────────────▶ red gradient (256-color)
+```
+
+Rule: glyph stays monochrome by default (works in every terminal). Add color only when severity / intensity is the point of the chart, not as decoration.
+
+## Diff blocks for before/after code
+
+Code changes belong in ` ```diff ` fenced blocks. Claude Code's syntax highlighter colors `+` lines green and `-` lines red automatically.
+
+````
+```diff
+- old approach
++ new approach
+  unchanged
+- function login(user) {
++ async function login(user) {
+    return user.token
+- }
++ }
+```
+````
+
+Use ` ```diff ` whenever showing:
+- Code change suggestions (PR review, refactor proposals)
+- Before/after rule edits (config files, prompts, SKILL.md)
+- Migration steps (old syntax → new syntax)
+
+Don't use ` ```diff ` for natural-language before/after — use side-by-side prose blocks instead.
+
 ## Intensity levels
 
 | Level | Lexical | Visual |

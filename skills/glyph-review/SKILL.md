@@ -17,12 +17,12 @@ L<line>: <icon> <category>: <issue>. <fix>.
 
 | Icon | Severity | Use when |
 |------|----------|----------|
-| 🔴 | bug | code is wrong, will break |
-| 🟡 | smell | code works but is fragile/unclear |
-| 🟢 | nit | style/preference, can ignore |
-| 🔒 | security | auth/PII/injection risk |
-| ⚡ | perf | measurable performance concern |
-| ❓ | question | clarification needed before approve |
+| `✖` | bug | code is wrong, will break |
+| `⚠` | smell | code works but is fragile/unclear |
+| `●` | nit | style/preference, can ignore |
+| `🔒` | security | auth/PII/injection risk (emoji OK — universally read) |
+| `⚡` | perf | measurable performance concern (emoji OK) |
+| `?` | question | clarification needed before approve |
 
 ## Categories (pick one)
 

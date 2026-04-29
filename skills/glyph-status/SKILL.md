@@ -50,24 +50,28 @@ If tool runs >30s — skip, report `not run (slow)`.
 - Always table format. No prose.
 - Empty cells: use `—` not "none" or "0"
 - Time ago: relative ("5 min ago", "yesterday", "3 days ago")
-- Flag bad state with 🔴 in cell, good with ✅ only when explicitly green
+- Flag bad state with `⚠` in cell, good with `✔` only when explicitly green
 - Don't list every uncommitted file — just count + first 3 names
+- **Wrap file paths in markdown links** so they're clickable in capable terminals: `[auth.ts:42](file:///abs/path/auth.ts:42)`. Use absolute paths via `file:///` URL.
+- For commit hashes, link to GitHub when remote is github.com: `[3aa21f7](https://github.com/org/repo/commit/3aa21f7)`
 
 ## Example output
 
 ```
-| Aspect      | State                                          |
-|-------------|------------------------------------------------|
-| Branch      | feature/improvements-4feel (3↑ 0↓)             |
-| Uncommitted | 2 modified (capture/page.tsx, text-capture...) |
-| Unpushed    | 3 commits ahead of origin                       |
-| Tests       | not run                                         |
-| Build       | ✅ tsc clean                                    |
-| Deps        | 4 outdated (firebase-admin, next, ...)          |
-| Last commit | 3aa21f7 docs(runbook): swap demo... (2 hr ago) |
+| Aspect      | State                                                            |
+|-------------|------------------------------------------------------------------|
+| Branch      | feature/improvements-4feel (3↑ 0↓)                               |
+| Uncommitted | 2 modified ([page.tsx](file:///abs/path/capture/page.tsx), …)    |
+| Unpushed    | 3 commits ahead of origin                                         |
+| Tests       | not run                                                           |
+| Build       | ✔ tsc clean                                                       |
+| Deps        | 4 outdated (firebase-admin, next, …)                              |
+| Last commit | [3aa21f7](https://github.com/org/repo/commit/3aa21f7) docs(...) (2 hr ago) |
 
-🟡 push 3 commits or stash before switching branch.
+⚠ push 3 commits or stash before switching branch.
 ```
+
+File paths and commit hashes wrapped in markdown links → clickable in iTerm2 / kitty / alacritty / ghostty / Hyper / VS Code terminal.
 
 ## When NOT to run
 
