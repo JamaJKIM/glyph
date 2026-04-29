@@ -187,14 +187,77 @@ Switch level any time: `/glyph lite | full | ultra`. Disable: `stop glyph` or `n
 | OSC 8 hyperlinks (clickable file refs in capable terminals) | ✔ |
 | Truecolor / 256-color charts | ✔ |
 
-**Standalone (no plugin system):**
+## How auto-activation works
+
+Once installed, glyph runs on every Claude Code session automatically — no slash command needed at the start of each session. Here's the mechanism:
+
+```
+user runs:  claude plugin install glyph@glyph
+                       │
+                       ▼
+       plugin.json registers SessionStart + UserPromptSubmit hooks
+                       │
+   ┌───────────────────┴───────────────────┐
+   ▼                                       ▼
+SessionStart (every CC start)      UserPromptSubmit (every prompt)
+fires hooks/glyph-activate.js      fires hooks/glyph-mode-tracker.js
+   │                                       │
+   ▼                                       ▼
+reads ~/.claude/.glyph-mode         parses /glyph commands
+(default: 'full')                   updates ~/.claude/.glyph-mode
+   │
+   ▼
+emits the SKILL.md ruleset as
+hidden session context — glyph
+mode is now active for this session
+   │
+   ▼
+statusline reads ~/.claude/.glyph-active
+shows [GLYPH], [GLYPH:LITE], or [GLYPH:ULTRA]
+```
+
+**No setup beyond install.** The plugin manifest (`/.claude-plugin/plugin.json`) wires the hooks. Default mode is `full`. To opt out: `stop glyph` or `normal mode`.
+
+## Verify it's running
+
+After installing + restarting Claude Code, check three things:
+
+```bash
+# 1. mode file exists and is set to 'full' (default)
+cat ~/.claude/.glyph-mode
+# expected: full
+
+# 2. active flag is written by SessionStart hook
+cat ~/.claude/.glyph-active
+# expected: full
+
+# 3. plugin is installed at user scope
+claude plugin list | grep glyph
+# expected: ❯ glyph@glyph
+```
+
+In the CC UI, look for `[GLYPH:FULL]` in your statusline. If you don't see it, the statusline isn't configured — glyph will offer to set it up automatically on first interaction (the activate hook detects missing `statusLine` config in `~/.claude/settings.json` and emits a setup nudge).
+
+If glyph still isn't responding visually, run `/reload-plugins` in CC, or restart the session.
+
+## Standalone install (no plugin system)
+
+For users who don't want the marketplace + plugin system, glyph ships a self-contained installer:
+
 ```bash
 git clone https://github.com/JamaJKIM/glyph
 cd glyph
 bash hooks/install.sh
 ```
 
-The script prints a JSON snippet to add to `~/.claude/settings.json`. Restart Claude Code, then `/glyph` to activate.
+The script:
+1. Copies hook scripts to `~/.claude/hooks/`
+2. Prints a JSON snippet to add to `~/.claude/settings.json` for SessionStart, UserPromptSubmit, and the statusline command
+3. You paste the snippet, restart Claude Code, done
+
+Same auto-activation behavior — fires on SessionStart, statusline shows `[GLYPH]`. Difference: you maintain the install yourself instead of via `claude plugin update`.
+
+To uninstall standalone: `bash hooks/uninstall.sh` then remove the JSON entries from `~/.claude/settings.json`.
 
 ### Activation
 
