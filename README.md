@@ -30,19 +30,19 @@
 A Claude Code skill/plugin that picks **the right visual shape** for each answer. Built on [Julius Brussee's caveman](https://github.com/JuliusBrussee/caveman) — caveman cuts words, glyph adds visual structure on top.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  glyph                                                      │
-│                                                             │
-│  ┌─────────────────────┬───────────────────────────────┐   │
-│  │  lexical layer      │  visual layer                 │   │
-│  │  (caveman lineage)  │  (structure & diagrams)       │   │
-│  │                     │                               │   │
-│  │  drop articles      │  pick format from content     │   │
-│  │  drop filler        │  shape: tables, trees,        │   │
-│  │  drop hedging       │  boxes, sparklines, arrows    │   │
-│  │  fragments OK       │                               │   │
-│  └─────────────────────┴───────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  glyph                                                       │
+│                                                              │
+│  ┌─────────────────────┬────────────────────────────────┐    │
+│  │  lexical layer      │  visual layer                  │    │
+│  │  (caveman lineage)  │  (structure & diagrams)        │    │
+│  │                     │                                │    │
+│  │  drop articles      │  pick format from content      │    │
+│  │  drop filler        │  shape: tables, trees,         │    │
+│  │  drop hedging       │  boxes, sparklines, arrows     │    │
+│  │  fragments OK       │                                │    │
+│  └─────────────────────┴────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ## Tradeoff
