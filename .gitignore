@@ -11,3 +11,6 @@ build/
 
 # private launch notes — never commit
 .private/
+
+# per-machine claude code state (tdd-guard data, local permissions)
+.claude/

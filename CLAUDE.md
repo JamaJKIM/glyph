@@ -34,22 +34,34 @@ glyph/
 
 ## State files
 
-- `~/.claude/.glyph-active` — written by activate hook, read by statusline
-- `~/.claude/.glyph-mode` — persisted user choice (lite/full/ultra/off)
+Caveman-style split — default and session are separate concerns:
+
+- `~/.claude/.glyph-active` — per-session flag. Written by activate hook on
+  SessionStart and by `/glyph` commands. Deleted by "stop glyph" / "normal mode".
+  Read by statusline.
+- `~/.config/glyph/config.json` — persistent default. Optional, rarely set.
+  Schema: `{ "defaultMode": "off" | "lite" | "full" | "ultra" }`. Defaults to
+  `full` when missing.
+- `GLYPH_DEFAULT_MODE` env var — overrides config.json.
+
+Resolution at SessionStart: `getSessionMode() || getDefaultMode()`. "stop glyph"
+only clears the session flag — next SessionStart re-asserts the default. Mirror
+of caveman's split between `~/.config/caveman/config.json` and `.caveman-active`.
 
 ## How activation works
 
 ```
 SessionStart hook → glyph-activate.js
-  ├── reads default mode from ~/.claude/.glyph-mode
-  ├── writes flag to ~/.claude/.glyph-active
+  ├── mode = getSessionMode() || getDefaultMode()  // sticky → default 'full'
+  ├── if 'off' → clearSessionMode + exit
+  ├── writes ~/.claude/.glyph-active
   ├── reads SKILL.md, filters intensity table to active level
   └── emits ruleset to stdout (becomes hidden session context)
 
 UserPromptSubmit hook → glyph-mode-tracker.js
-  ├── matches /glyph [level] in user input
-  ├── matches "stop glyph" / "normal mode"
-  └── persists new mode + emits inline confirmation
+  ├── matches /glyph [level]                → setSessionMode(level)
+  ├── matches "stop glyph" / "normal mode"  → clearSessionMode (NOT setMode('off'))
+  └── emits inline confirmation
 ```
 
 ## Coding conventions
@@ -61,7 +73,7 @@ UserPromptSubmit hook → glyph-mode-tracker.js
 ## Don't
 
 - Don't add new dependencies (keep zero-deps for fast hook startup).
-- Don't change `~/.claude/.glyph-mode` filename without updating both `glyph-config.js` and statusline.
+- Don't reintroduce a single-file persistence model. Default and session must stay split (`~/.config/glyph/config.json` for default, `~/.claude/.glyph-active` for session) — collapsing them re-creates the bug where "stop glyph" permanently disables the plugin.
 - Don't put behavior in hooks that should live in `SKILL.md` — SKILL.md is the source of truth.
 
 ## Roadmap (Track 2 — fork CC)

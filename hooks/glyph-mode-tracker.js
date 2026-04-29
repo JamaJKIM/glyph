@@ -1,12 +1,12 @@
-#!/usr/bin/env node
 // glyph-mode-tracker — UserPromptSubmit hook
 //
-// Detects /glyph commands and "stop glyph" in user input. Updates
-// ~/.claude/.glyph-mode so next SessionStart picks up the change.
-// Also emits inline ruleset for the new mode so the change takes effect
-// immediately within the current turn.
+// Detects /glyph commands and "stop glyph" in user input. Updates the
+// per-session flag at ~/.claude/.glyph-active. Caveman parity:
+//   - "stop glyph"  → clearSessionMode (default re-asserts next SessionStart)
+//   - /glyph X      → setSessionMode(X) for current session
+// Emits a confirmation line so the change is visible inside the same turn.
 
-const { setMode, getDefaultMode, VALID_MODES } = require('./glyph-config');
+const { setSessionMode, clearSessionMode, VALID_MODES } = require('./glyph-config');
 
 let raw = '';
 process.stdin.on('data', chunk => raw += chunk);
@@ -16,10 +16,10 @@ process.stdin.on('end', () => {
 
   const prompt = (input.user_prompt || input.prompt || '').toLowerCase().trim();
 
-  // Toggle off
+  // Toggle off — clear the flag rather than persisting "off". Next session reverts to default.
   if (/\b(stop glyph|normal mode)\b/.test(prompt)) {
-    try { setMode('off'); } catch (e) {}
-    process.stdout.write('GLYPH MODE: off — reverting to normal Claude Code output');
+    clearSessionMode();
+    process.stdout.write('GLYPH MODE: off (this session) — default re-asserts next session');
     process.exit(0);
   }
 
@@ -29,20 +29,27 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
 
-  // /glyph or /glyph <level>. Lookahead requires whitespace or end-of-string
-  // so /glyph-foo doesn't match /glyph with level=undefined.
+  // /glyph or /glyph <level>
   const match = prompt.match(/\/glyph(?=\s|$)(?:\s+(\S+))?/);
   if (match) {
     const level = match[1] || 'full';
     if (VALID_MODES.has(level)) {
-      try { setMode(level); } catch (e) {}
-      process.stdout.write('GLYPH MODE: ' + level + ' — applied. Visual + terse output active.');
+      try {
+        if (level === 'off') {
+          clearSessionMode();
+          process.stdout.write('GLYPH MODE: off (this session)');
+        } else {
+          setSessionMode(level);
+          process.stdout.write('GLYPH MODE: ' + level + ' — applied. Visual + terse output active.');
+        }
+      } catch (e) {
+        process.stdout.write('GLYPH MODE: error — ' + e.message);
+      }
     } else {
       process.stdout.write('GLYPH MODE: invalid level "' + level + '". Valid: lite, full, ultra, off.');
     }
     process.exit(0);
   }
 
-  // No-op for non-glyph prompts
   process.stdout.write('');
 });

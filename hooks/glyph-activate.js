@@ -9,25 +9,23 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { getDefaultMode } = require('./glyph-config');
+const { getDefaultMode, getSessionMode, setSessionMode, clearSessionMode } = require('./glyph-config');
 
 const claudeDir = path.join(os.homedir(), '.claude');
 const flagPath = path.join(claudeDir, '.glyph-active');
 const settingsPath = path.join(claudeDir, 'settings.json');
 
-const mode = getDefaultMode();
+// Session flag wins for stickiness across resumes; default re-asserts when missing.
+const mode = getSessionMode() || getDefaultMode();
 
 if (mode === 'off') {
-  try { fs.unlinkSync(flagPath); } catch (e) {}
+  clearSessionMode();
   process.stdout.write('OK');
   process.exit(0);
 }
 
-// 1. Write flag file
-try {
-  fs.mkdirSync(path.dirname(flagPath), { recursive: true });
-  fs.writeFileSync(flagPath, mode);
-} catch (e) { /* best-effort */ }
+// 1. Persist active mode to flag (idempotent — also what statusline reads)
+try { setSessionMode(mode); } catch (e) { /* best-effort */ }
 
 // 2. Emit ruleset filtered to active intensity. Reads SKILL.md so edits propagate.
 let skillContent = '';
