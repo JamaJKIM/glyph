@@ -1,23 +1,33 @@
 <p align="center">
-  <strong>glyph</strong>
+  <img src="https://em-content.zobj.net/source/apple/391/spiral-shell_1f41a.png" width="120" alt="glyph" />
+</p>
+
+<h1 align="center">glyph</h1>
+
+<p align="center">
+  <strong>speak less. show more.</strong>
 </p>
 
 <p align="center">
-  <em>speak less. show more.</em>
+  <a href="https://github.com/JamaJKIM/glyph/stargazers"><img src="https://img.shields.io/github/stars/JamaJKIM/glyph?style=flat&color=yellow" alt="Stars"></a>
+  <a href="https://github.com/JamaJKIM/glyph/commits/main"><img src="https://img.shields.io/github/last-commit/JamaJKIM/glyph?style=flat" alt="Last Commit"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/JamaJKIM/glyph?style=flat" alt="License"></a>
+  <a href="https://github.com/JuliusBrussee/caveman"><img src="https://img.shields.io/badge/built%20on-caveman-orange" alt="Built on caveman"></a>
 </p>
 
 <p align="center">
-  <a href="#the-honest-tradeoff">Tradeoff</a> •
-  <a href="#before--after-real-prompts-real-token-counts">Before/After</a> •
+  <a href="#tradeoff">Tradeoff</a> •
+  <a href="#before--after">Before/After</a> •
   <a href="#install">Install</a> •
   <a href="#levels">Levels</a> •
-  <a href="#how-it-works">How it works</a> •
-  <a href="#credits">Credits</a>
+  <a href="#skills">Skills</a> •
+  <a href="#benchmarks">Benchmarks</a> •
+  <a href="#ecosystem">Ecosystem</a>
 </p>
 
 ---
 
-A Claude Code skill/plugin that fuses two compression layers into one mode:
+A Claude Code skill/plugin that picks **the right visual shape** for each answer. Built on [Julius Brussee's caveman](https://github.com/JuliusBrussee/caveman) — caveman cuts words, glyph adds visual structure on top.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -35,112 +45,132 @@ A Claude Code skill/plugin that fuses two compression layers into one mode:
 └─────────────────────────────────────────────────────────────┘
 ```
 
-Built on [Julius Brussee's caveman](https://github.com/JuliusBrussee/caveman) — caveman cuts words, glyph adds visual structure on top.
+## Tradeoff
 
-## The honest tradeoff
-
-Benchmarked across 8 dev prompts (Claude Opus 4.7 as judge):
+Benchmarked across 8 dev prompts. Claude Opus 4.7 as judge.
 
 ```
-                   tokens     readability    format-fit
-                   ──────     ───────────    ──────────
-   normal           872          7.2            7.5
-   caveman          458 ⭐       8.4            7.8
-   glyph            495          9.0 ⭐         9.5 ⭐
+┌──────────────────────────────────────────────┐
+│  vs NORMAL CLAUDE                            │
+│  TOKENS SAVED          ████████      43%     │
+│  READABILITY GAIN      ████████   +1.8/10    │
+│  FORMAT-FIT GAIN       ████████   +2.0/10    │
+├──────────────────────────────────────────────┤
+│  vs CAVEMAN                                  │
+│  TOKENS COST           ███             +8%   │
+│  READABILITY GAIN      ████        +0.6/10   │
+│  FORMAT-FIT GAIN       ████████    +1.7/10   │
+└──────────────────────────────────────────────┘
 ```
 
-```
-glyph vs normal:    -43% tokens, +1.8 readability, +2.0 format-fit
-glyph vs caveman:   +8% tokens,  +0.6 readability, +1.7 format-fit
-```
+| Metric | Normal | Caveman | Glyph |
+|--------|-------:|--------:|------:|
+| Avg output tokens | 872 | **458** ⭐ | 495 |
+| Readability (1-10) | 7.2 | 8.4 | **9.0** ⭐ |
+| Completeness (1-10) | **9.8** ⭐ | 8.6 | 8.6 |
+| Format-fit (1-10) | 7.5 | 7.8 | **9.5** ⭐ |
 
-**Glyph is NOT the smallest output** — caveman wins that. Glyph trades a few extra tokens (visual chars: `┌─┐`, `|`, `✅`) for visual structure that's faster to scan and shape-correct.
+**Glyph is NOT the smallest output** — caveman wins on raw tokens. Glyph trades 8% extra tokens (visual chars: `┌─┐`, `|`, `✅`) for shape-correct structure that's faster to scan.
 
 | Pick this | When |
 |-----------|------|
 | **glyph** | comparing options, branching logic, file structure, daily dev work |
-| **caveman** | minimum-token responses, single-fact answers, terminal output you'll grep |
+| **caveman** | minimum-token output, single-fact answers, terminal output you'll grep |
 | **normal** | research mode where every nuance matters |
 
-Where glyph shines vs caveman (real numbers from `benchmarks/results.md`):
+## Before / After
 
-```
-prompt              caveman    glyph     verdict
-─────────           ───────    ─────     ───────
-compare-options       571       538      glyph -33 tokens AND better
-branching-logic       564       405      glyph -159 tokens AND better
-hierarchy            1189      1275      caveman cheaper, glyph clearer
-state-flow            438       684      caveman cheaper, glyph clearer
-react-rerender        228       246      caveman wins (simple cause list)
-single-fact             2         2      tie (no diagram needed)
-```
+Real benchmark prompt: *"compare three caching strategies for a high-traffic API"*. Token counts via tiktoken on actual API responses.
 
-If you only need text compression, install [caveman](https://github.com/JuliusBrussee/caveman). If you want shape-aware visuals on top, install glyph.
+<table>
+<tr>
+<td width="50%">
 
-## Before / After (real prompts, real token counts)
+### 🗣️ Normal Claude (1216 tokens)
 
-Pulled from `benchmarks/samples/results.json`. Token counts via tiktoken.
-
-### Prompt: "compare three caching strategies"
-
-**Normal Claude — 1216 tokens, prose-heavy:**
 > "When evaluating caching strategies for a high-traffic API, you have three primary options: in-memory LRU, Redis, and CDN edge cache. Each comes with distinct tradeoffs that should be weighed against your specific requirements. In-memory LRU caches store data directly within the application process, providing extremely low latency..."
 
-**Caveman — 571 tokens, terse bullets:**
-> "3 strategies. LRU: ~0.1ms, free, manual invalidation, lost on restart. Redis: ~1ms, $$, TTL+evict, network hop. CDN: ~50ms first hop, $$$, tag-based, edge cache. Pick LRU for hot path, Redis for shared state, CDN for static."
+</td>
+<td width="50%">
 
-**Glyph — 538 tokens, table:**
+### 🐚 Glyph (538 tokens)
+
 ```
-| Strategy   | Latency  | Cost  | Invalidation | Failure mode    |
-|------------|---------:|-------|--------------|-----------------|
-| LRU        | ~0.1ms   | $     | manual       | lost on restart |
-| Redis      | ~1ms     | $$    | TTL + evict  | network split   |
-| CDN edge   | ~50ms    | $$$   | tag-based    | stale at edge   |
+| Strategy   | Latency  | Cost  | Invalidation |
+|------------|---------:|-------|--------------|
+| LRU        | ~0.1ms   | $     | manual       |
+| Redis      | ~1ms     | $$    | TTL + evict  |
+| CDN edge   | ~50ms    | $$$   | tag-based    |
 ```
-Glyph saved 33 tokens vs caveman AND scored higher on readability (9 vs 8) and format-fit (10 vs 6) per LLM judge. Comparison content has table shape — glyph picked it.
 
-### Explaining a re-render
+> Pick LRU for hot path, Redis for shared state, CDN for static assets.
 
-| Mode | Output |
-|------|--------|
-| Normal | "Your component is re-rendering because you're creating a new object reference on each render cycle. When you pass an inline object as a prop, React's shallow comparison sees it as a different object every time..." |
-| Glyph lite | "Component re-renders because you create new object reference each render. Wrap in `useMemo`." |
-| Glyph full | "New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`." |
-| Glyph ultra | "Inline obj prop → new ref → re-render. `useMemo`." |
+</td>
+</tr>
+<tr>
+<td>
 
-### Visualizing branching logic
+### 🗣️ Normal — branching logic
 
-**Normal:**
 > "First check if the token is expired. If it is, reject the request. Otherwise, validate the signature. If the signature is invalid, reject. Otherwise, accept."
 
-**Glyph:**
+</td>
+<td>
+
+### 🐚 Glyph — same content
+
 ```
-            token expired?
-                │
-        ┌───────┴───────┐
-       yes              no
-        │               │
-     reject       signature valid?
-                        │
-                ┌───────┴───────┐
-               yes              no
-                │               │
-             accept          reject
+        token expired?
+            │
+    ┌───────┴───────┐
+   yes              no
+    │               │
+ reject     signature valid?
+                    │
+            ┌───────┴───────┐
+           yes              no
+            │               │
+         accept          reject
 ```
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 🗣️ Normal — single concept
+
+> "Your component is re-rendering because you're creating a new object reference on each render cycle. When you pass an inline object as a prop, React's shallow comparison sees it as a different object every time, which triggers a re-render. I'd recommend using useMemo to memoize the object."
+
+</td>
+<td>
+
+### 🐚 Glyph — same content
+
+> Inline obj prop → new ref each render → re-render. `useMemo`.
+
+*(no diagram — single explanation, glyph stays in caveman prose)*
+
+</td>
+</tr>
+</table>
+
+**Same answer. Right shape for the question.**
 
 ## Install
 
-**Plugin (recommended).** Inside a Claude Code session, run:
+Currently Claude Code only. Other agents coming after Track 1 validation.
 
-```
-/plugin marketplace add JamaJKIM/glyph
-/plugin install glyph@glyph
-```
+| Agent | Install |
+|-------|---------|
+| **Claude Code** | `claude plugin marketplace add JamaJKIM/glyph && claude plugin install glyph@glyph` |
+| Codex | _(planned)_ |
+| Gemini CLI | _(planned)_ |
+| Cursor / Windsurf | _(planned)_ |
 
-Restart the session. Then activate with `/glyph` (default is **off** — opt-in).
+After install: `/glyph` to activate (default is **off** — opt-in).
 
-**Standalone (no plugin system).** Clone and run the installer:
-
+**Standalone (no plugin system):**
 ```bash
 git clone https://github.com/JamaJKIM/glyph
 cd glyph
@@ -149,44 +179,99 @@ bash hooks/install.sh
 
 The script prints a JSON snippet to add to `~/.claude/settings.json`. Restart Claude Code, then `/glyph` to activate.
 
+### Activation
+
+| Trigger | Effect |
+|---------|--------|
+| `/glyph` or `/glyph:glyph` | Activate at default level (`full`) |
+| `/glyph lite` | Tight prose, tables for comparison only |
+| `/glyph full` | Caveman text + ASCII diagrams (default) |
+| `/glyph ultra` | Maximum compression, every output visual |
+| `/glyph-help` | Quick-reference cheat sheet |
+| `stop glyph` / `normal mode` | Disable |
+
 ## Levels
 
-| Level | Lexical | Visual |
-|-------|---------|--------|
-| **lite** | Drop filler/hedging only. Keep articles + full sentences | Tables for comparison only |
-| **full** ⭐ | Drop articles, fragments OK, short synonyms | Tables + ASCII trees + hierarchies + boxes |
-| **ultra** | Abbreviate everything (DB, fn, req, →) | Every output visual; mermaid suggested for graphs >5 nodes |
+Pick your level of structure:
 
-Switch: `/glyph lite|full|ultra`. Disable: `stop glyph` or `normal mode`.
+<table>
+<tr>
+<td width="33%">
 
-## How it works
-
-### Lexical layer (from caveman)
+### 🪶 Lite
 
 ```
-drop:    articles, filler, pleasantries, hedging
-keep:    technical terms, code, errors verbatim
-pattern: [thing] [action] [reason] → [next]
+Component re-renders
+because you create new
+object reference each
+render. Wrap in `useMemo`.
 ```
 
-### Visual layer (format-selection rule)
+Drop filler. Keep grammar.
 
-Picks format from content shape:
+</td>
+<td width="33%">
 
-| Content shape | Format |
-|---|---|
-| Comparing 2+ options | Markdown table |
-| Sequential steps | Numbered list with `→` arrows |
-| Branching logic | ASCII decision tree |
-| Hierarchy | Indented tree `├── └──` |
-| State / flow | Boxes + arrows |
-| Tradeoffs (2 axes) | 2x2 grid |
-| File / code structure | Directory tree |
-| Numeric series | Sparklines `▁▂▃▄▅▆▇█` |
-| Counts | Block bars `█████░░░` |
-| Single fact | Plain caveman sentence — no diagram |
+### 🐚 Full ⭐
 
-### What survives the Claude Code render pipeline
+```
+| Cause       | Fix         |
+|-------------|-------------|
+| New ref     | `useMemo`   |
+| Inline obj  | move out    |
+| Parent re   | memoize     |
+```
+
+Default. Picks shape.
+
+</td>
+<td width="33%">
+
+### 🔥 Ultra
+
+```
+inline obj → new ref
+→ re-render. useMemo.
+```
+
+Telegraphic. Arrows for cause.
+
+</td>
+</tr>
+</table>
+
+## Skills
+
+| Skill | What it does | Trigger |
+|-------|--------------|---------|
+| **glyph** | Visual + terse output mode (this is the main one) | `/glyph` |
+| **glyph-help** | Quick-reference card. All modes, primitives, commands | `/glyph-help` |
+| **glyph-commit** | Conventional Commits with terse subjects + body tables for multi-file scope | `/glyph-commit` |
+| **glyph-review** | One-line PR comments with severity icons: `L42: 🔴 bug: user null. Add guard.` | `/glyph-review` |
+| **glyph-debug** | Parse stack traces into one-line summary + 3-line context. Replaces wall-of-text errors | `/glyph-debug` |
+| **glyph-status** | Project state at a glance (git, tests, build, deps) as a table | `/glyph-status` |
+| **glyph-scaffold** | Idea → ASCII spec card (file tree, data flow, sequence). Planning before coding | `/glyph-scaffold` |
+
+## Format-selection rule
+
+Glyph picks the format from content shape:
+
+| Content shape | Format | Trigger phrases in user prompt |
+|---|---|---|
+| Comparing 2+ options | Markdown table | "compare", "vs", "options for" |
+| Sequential steps | Numbered list with `→` arrows | "how do I", "steps to" |
+| Branching logic | ASCII decision tree | "if X then", "what if" |
+| Hierarchy | Indented tree `├── └──` | "structure of", "what's in" |
+| State / flow | Boxes + arrows | "flow", "lifecycle" |
+| Tradeoffs (2 axes) | 2x2 grid | "effort vs value" |
+| File / code structure | Directory tree | "project layout" |
+| Numeric series | Sparklines `▁▂▃▄▅▆▇█` | "trend over", "growth" |
+| Counts / proportions | Block bars `█████░░░` | "how much", "%" |
+| Single fact | Plain caveman sentence | "what's the X" — no diagram |
+
+**Auto-clarity:** glyph drops to plain prose for security warnings, single-fact answers, error messages, code review comments, and destructive confirmations.
+
+## What survives the Claude Code render pipeline
 
 CC is built on Ink (React for CLI). Its markdown renderer (`Markdown.tsx` → `MarkdownTable.tsx`) handles:
 
@@ -196,66 +281,78 @@ CC is built on Ink (React for CLI). Its markdown renderer (`Markdown.tsx` → `M
 | Code fences (monospace) | ✅ | `HighlightedCode.tsx` |
 | Unicode box-drawing `┌─┐│└┘` | ✅ always | terminal text |
 | Bold/italic/headings | ✅ | `Markdown.tsx` |
-| Terminal hyperlinks `[text](url)` | ✅ if supported | `supports-hyperlinks.ts` |
 | Sparklines `▁▂▃▄▅▆▇█` | ✅ always | terminal text |
 | Block bars `█▓▒░` | ✅ always | terminal text |
 | Mermaid blocks | ❌ inline | text only |
 | Inline images | ❌ | Ink owns pipeline |
 
-Glyph uses only the ✅ primitives. No fork required.
+Glyph uses only the ✅ primitives. No fork required for Track 1.
 
-## Auto-clarity exceptions
+## Benchmarks
 
-Glyph drops to plain prose for:
+Real token counts from the Claude API. Three-arm methodology (normal vs caveman vs glyph) — comparing terse-with-shape against terse-only avoids conflating "glyph wins" with "anything terse wins". Reproducible by anyone with an API key.
 
+| Prompt | Normal | Caveman | Glyph | Glyph vs Caveman |
+|--------|-------:|--------:|------:|:----------------:|
+| compare-options (caching) | 1216 | 571 | 538 | **-33** |
+| branching-logic (JWT) | 1093 | 564 | 405 | **-159** |
+| hierarchy (Next.js) | 1324 | 1189 | 1275 | +86 |
+| numeric-series (bundles) | 816 | 400 | 458 | +58 |
+| state-flow (OAuth) | 1311 | 438 | 684 | +246 |
+| single-fact (port) | 11 | 2 | 2 | tie |
+| react-rerender | 557 | 228 | 246 | +18 |
+| tradeoff-matrix (DB) | 649 | 269 | 353 | +84 |
+| **Average** | **872** | **458** | **495** | **+37** |
+
+```bash
+# Reproduce yourself
+export ANTHROPIC_API_KEY=sk-ant-...
+cd benchmarks
+uv run python llm_run.py                       # generate samples (~5 min, ~$0.50)
+uv run --with tiktoken python measure.py       # token counts → results.md
+uv run --with anthropic python judge.py        # claude-as-judge → judge_results.md
 ```
-exception              behavior
-──────────             ──────────
-security warning       full sentences + bold
-single-fact answer     one terse sentence
-error message          quote verbatim
-code review comment    one line per issue
-destructive confirm    full grammar + warning
-```
 
-Resume after.
+> [!IMPORTANT]
+> Glyph wins on **comparison** and **branching** content (where structure pays for itself). Glyph loses tokens on **prose-heavy / state-flow** content where ASCII boxes add chars without proportional clarity gain. The skill knows this and falls back to caveman prose when content is genuinely linear.
+
+## Honest weakness
+
+Found by the benchmark itself: glyph occasionally over-formats simple cause lists (forces table when prose suffices). SKILL.md was tightened in v0.1 with a 5-question pre-flight check before adding visuals. See `benchmarks/judge_results.md` for per-prompt judge notes.
 
 ## Roadmap
 
 - [x] Track 1 — skill + hooks (works on stock CC)
-- [x] glyph-commit, glyph-review, glyph-debug, glyph-status, glyph-scaffold skills
-- [x] Benchmark harness — three-arm prompt suite + tiktoken measurement
-- [x] Run benchmarks + publish numbers (see [Measured results](#measured-results) below)
-- [x] LLM-judge eval harness — readability/completeness/format-fit scores
+- [x] All 7 sub-skills (glyph, help, commit, review, debug, status, scaffold)
+- [x] Three-arm benchmark + LLM-judge harness
+- [x] Real numbers in README — no marketing claims
+- [ ] Codex / Gemini / Cursor / Windsurf ports (skill files only — no auto-activation hook system)
 - [ ] Track 2 fork — custom Ink components for ` ```glyph:tree `, ` ```glyph:flow `, ` ```glyph:chart ` fenced blocks (renders native React in terminal). See `docs/track-2-fork-design.md`
 
-## Reproduce the benchmarks
+## Ecosystem
 
-The headline numbers in [The honest tradeoff](#the-honest-tradeoff) come from this harness:
+Glyph stays narrow — it owns the message. For the rest:
 
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-cd benchmarks
-uv run python llm_run.py                       # generates 8 prompts × 3 arms (~5 min)
-uv run --with tiktoken python measure.py       # tiktoken counts → results.md
-uv run --with anthropic python judge.py        # claude-as-judge → judge_results.md
-```
+| Need | Use |
+|------|-----|
+| Cut output tokens (text-only) | [caveman](https://github.com/JuliusBrussee/caveman) — glyph's lexical layer is built on caveman |
+| Compress memory files | [caveman-compress](https://github.com/JuliusBrussee/caveman) (cuts ~46% of input tokens) |
+| Cross-session memory | [claude-mem](https://github.com/thedotmack/claude-mem) |
+| HUD chrome around chat | [claude-hud](https://github.com/jarrodwatts/claude-hud) |
+| TDD enforcement hook | [tdd-guard](https://github.com/nizos/tdd-guard) |
+| Excalidraw export | [excalidraw-mcp](https://github.com/excalidraw/excalidraw-mcp) |
 
-Outputs:
-- `benchmarks/samples/results.json` — raw three-arm outputs
-- `benchmarks/results.md` — token table per prompt + arm averages
-- `benchmarks/samples/judge.json` — readability/completeness/format-fit per prompt
-- `benchmarks/judge_results.md` — averages + per-prompt judge notes
+Glyph composes with all of the above. No conflicts.
 
-Cost ~$0.50 against the Anthropic API. Run it yourself; numbers should match within ±5% (LLM-judge has variance).
+## Star this repo
 
-Honest weakness identified by the benchmark: glyph occasionally over-formats simple cause lists (forces table when prose suffices). SKILL.md was tightened to push back on this in v0.1.0.
+If glyph helps you scan dev docs faster — leave a star ⭐
 
 ## Credits
 
-- [Julius Brussee](https://github.com/JuliusBrussee) — original [caveman](https://github.com/JuliusBrussee/caveman) plugin. Glyph is a superset built on caveman's lexical compression rules.
+- [Julius Brussee](https://github.com/JuliusBrussee) — original [caveman](https://github.com/JuliusBrussee/caveman) plugin. Glyph absorbs caveman's lexical compression rules and adds the visual layer.
 - Anthropic — Claude Code source structure (Ink, Markdown.tsx, MarkdownTable.tsx) informed the visual primitive selection.
 
 ## License
 
-MIT
+MIT — same as caveman.
