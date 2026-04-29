@@ -363,12 +363,27 @@ CC is built on Ink (React for CLI). Its markdown renderer (`Markdown.tsx` → `M
 | Code fences (monospace) | ✅ | `HighlightedCode.tsx` |
 | Unicode box-drawing `┌─┐│└┘` | ✅ always | terminal text |
 | Bold/italic/headings | ✅ | `Markdown.tsx` |
+| OSC 8 hyperlinks | ✅ | `supports-hyperlinks.ts` |
+| Truecolor / 256-color ANSI | ✅ | `Ansi.tsx` (parses external ANSI) |
 | Sparklines `▁▂▃▄▅▆▇█` | ✅ always | terminal text |
 | Block bars `█▓▒░` | ✅ always | terminal text |
 | Mermaid blocks | ❌ inline | text only |
-| Inline images | ❌ | Ink owns pipeline |
+| Inline images (iTerm2 / Kitty / Sixel) | ❌ | termio.Parser strips unknown escapes |
 
 Glyph uses only the ✅ primitives. No fork required for Track 1.
+
+## How glyph was designed
+
+Glyph's primitives weren't chosen by guessing. They were chosen by reading Claude Code's actual rendering pipeline (`Markdown.tsx`, `MarkdownTable.tsx`, `Ansi.tsx`, `supports-hyperlinks.ts`, `terminal-querier.ts`, `Spinner.tsx`) and the Ink reconciler that ships with CC. That analysis grounded four non-obvious design decisions:
+
+| Decision | Source insight |
+|----------|----------------|
+| Use markdown tables, not custom box-drawing for tabular data | CC has a dedicated `<MarkdownTable>` React component — text tables become real Ink Box layouts |
+| Wrap file paths / PR refs as markdown links | `supports-hyperlinks.ts` confirms OSC 8 passes through in iTerm2, kitty, alacritty, ghostty, Hyper, even tmux |
+| Stay text-only (no inline images) | `Ansi.tsx` parses standard ANSI; non-standard escapes (iTerm2 image protocol, Kitty graphics, Sixel) get stripped before render |
+| Prefer `figures`-vocab glyphs (`✔ ✖ ⚠ ❯ ●`) over emoji | CC's `Spinner.tsx` imports the `figures` package — these glyphs are CC's native icon vocabulary |
+
+The rendering pipeline analysis also identifies the **single dispatch point** (line 144 of `Markdown.tsx`) where a forked CC could add custom React components for `glyph:tree`, `glyph:flow`, `glyph:chart` fenced blocks. That's documented as **Track 2** in [`docs/track-2-fork-design.md`](docs/track-2-fork-design.md).
 
 ## Benchmarks
 
@@ -433,7 +448,7 @@ If glyph helps you scan dev docs faster — leave a star ⭐
 ## Credits
 
 - [Julius Brussee](https://github.com/JuliusBrussee) — original [caveman](https://github.com/JuliusBrussee/caveman) plugin. Glyph absorbs caveman's lexical compression rules and adds the visual layer.
-- Anthropic — Claude Code source structure (Ink, Markdown.tsx, MarkdownTable.tsx) informed the visual primitive selection.
+- Anthropic — Claude Code's rendering pipeline (Ink, `Markdown.tsx`, `MarkdownTable.tsx`, `Ansi.tsx`, `supports-hyperlinks.ts`, `terminal-querier.ts`, `Spinner.tsx`) informed every visual-primitive choice in glyph. See [How glyph was designed](#how-glyph-was-designed) for the source-to-decision mapping.
 
 ## License
 
