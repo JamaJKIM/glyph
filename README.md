@@ -251,6 +251,7 @@ Telegraphic. Arrows for cause.
 | **glyph-debug** | Parse stack traces into one-line summary + 3-line context. Replaces wall-of-text errors | `/glyph-debug` |
 | **glyph-status** | Project state at a glance (git, tests, build, deps) as a table | `/glyph-status` |
 | **glyph-scaffold** | Idea → ASCII spec card (file tree, data flow, sequence). Planning before coding | `/glyph-scaffold` |
+| **glyph-render** | Routes "draw this big" to excalidraw-mcp or mermaid-mcp. Falls back to ASCII inline | `/glyph-render` |
 
 ## Format-selection rule
 

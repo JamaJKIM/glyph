@@ -53,7 +53,11 @@ Pick format from content shape, not personal style:
 | Tradeoff matrix (2 axes) | 2x2 grid | "effort vs value", "risk vs reward", "score X on Y" |
 | File / code structure | Directory tree | "project layout", "where does X live", "file structure", "ls" |
 | Numeric series / progress | Sparklines `▁▂▃▄▅▆▇█` | "trend over", "growth", "performance over", "history of" |
-| Counts / proportions | Block bars `█████░░░` | "how much", "percentage", "coverage", "ratio" |
+| Counts / proportions | Horizontal bar chart `█████░░░` | "how much", "percentage", "coverage", "ratio" |
+| Multiple numeric series | ASCII line chart (braille / unicode) | "plot X vs Y", "compare growth", "chart this" |
+| Distribution / histogram | Vertical bar histogram with `█` | "distribution of", "histogram", "spread" |
+| Architecture diagram (≥5 nodes) | **excalidraw-mcp** (opens browser preview) | "architecture", "system design", "draw the system" |
+| Sequence / flow (≥4 actors) | **mermaid via mermaid-mcp** | "sequence diagram", "render mermaid", "show the flow visually" |
 | Single fact / single answer | Plain caveman sentence — no diagram | "what's the X", "is Y true", "default port", yes/no questions |
 
 ### Trigger detection rules
@@ -139,6 +143,53 @@ Test pass rate: ████████████  100%
 ```
 
 Sparkline chars: `▁▂▃▄▅▆▇█`. Bar chars: `█▓▒░ ▏▎▍▌▋▊▉`.
+
+**Horizontal bar chart** — for comparing labeled values:
+```
+React 18    ███████████████████████████████████  44 KB
+React 19    █████████████████████████████████████████  50 KB
+Vue 3       █████████████████████████████  34 KB
+Svelte 5    ███████████████  16 KB
+```
+Rule: longest bar = max width − ~4 chars. Scale others proportionally. Pad labels to align bars.
+
+**Vertical bar / histogram** — for distributions:
+```
+   8 │      █
+   6 │      █  █
+   4 │   █  █  █  █
+   2 │█  █  █  █  █  █
+   0 └──┴──┴──┴──┴──┴──
+     a  b  c  d  e  f
+```
+
+**ASCII line chart** — when sparkline doesn't capture the shape:
+```
+        100 │      ╭─╮
+            │     ╱   ╲    ╭──
+   value    │   ╭╯     ╲  ╱
+            │  ╱        ╲╱
+          0 └──┴──┴──┴──┴──┴──
+              t1 t2 t3 t4 t5
+```
+Use `╭╮╯╰─│` for smooth lines. Scale Y axis to fit ~6 rows max.
+
+**Excalidraw / Mermaid for big diagrams** — when ASCII can't capture it:
+
+Glyph orchestrates external rendering when a visual exceeds what plain text can hold cleanly:
+
+| Use this MCP | When |
+|-------------|------|
+| `mcp__excalidraw__*` | Architecture diagrams ≥5 nodes, system designs, anything user wants exportable |
+| `mcp__mermaid__mermaid_preview` | Sequence diagrams ≥4 actors, complex state machines, flow charts >3 levels deep |
+| `mcp__mermaid__mermaid_save` | Persist mermaid as PNG for embedding in PRs/docs |
+
+Routing rule:
+- ≤4 nodes / actors → ASCII boxes (`┌─┐│└┘├┤`) inline in chat
+- ≥5 nodes / actors → call MCP, render in browser preview
+- User explicitly says "draw this big" / "as excalidraw" / "as mermaid" → call MCP regardless of size
+
+When calling an MCP, glyph still emits a one-line summary in chat ("→ rendering as excalidraw, see browser preview").
 
 **2x2 tradeoff matrix**:
 ```
