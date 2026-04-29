@@ -13,12 +13,21 @@ Token + scan-time measurements for glyph vs caveman vs normal Claude.
 ## Running
 
 ```bash
-# Generate samples (needs ANTHROPIC_API_KEY)
+# 1. Generate samples (needs ANTHROPIC_API_KEY) — three arms per prompt
 uv run python llm_run.py
 
-# Measure offline (no API key)
+# 2. Token measurement (no API key, offline)
 uv run --with tiktoken python measure.py
+
+# 3. LLM-as-judge readability/completeness/format-fit scores (needs API key)
+uv run --with anthropic python judge.py
 ```
+
+Outputs:
+- `samples/results.json`     ← raw three-arm outputs
+- `samples/judge.json`       ← per-prompt judge scores
+- `results.md`               ← token counts table
+- `judge_results.md`         ← readability/completeness/format scores
 
 ## Three-arm design
 

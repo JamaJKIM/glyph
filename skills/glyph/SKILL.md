@@ -43,18 +43,34 @@ Yes: "Bug in auth middleware. Token expiry use `<` not `<=`. Fix:"
 
 Pick format from content shape, not personal style:
 
-| Content shape | Format |
-|---|---|
-| Comparing 2+ options | Markdown table |
-| Sequential steps | Numbered list with `→` arrows |
-| Branching logic (if/then) | ASCII decision tree |
-| Hierarchy (parts of whole) | Indented tree `├── └──` |
-| State machine / flow | ASCII boxes + arrows |
-| Tradeoff matrix (2 axes) | 2x2 grid |
-| File / code structure | Directory tree |
-| Numeric series / progress | Sparklines `▁▂▃▄▅▆▇█` |
-| Counts / proportions | Block bars `█████░░░` |
-| Single fact / single answer | Plain caveman sentence — no diagram |
+| Content shape | Format | Trigger phrases in user prompt |
+|---|---|---|
+| Comparing 2+ options | Markdown table | "compare", "vs", "difference between", "which should I use", "options for", "pros and cons" |
+| Sequential steps | Numbered list with `→` arrows | "how do I", "steps to", "walk me through", "process for" |
+| Branching logic (if/then) | ASCII decision tree | "if X then", "when X happens", "what if", "depending on", "logic for" |
+| Hierarchy (parts of whole) | Indented tree `├── └──` | "structure of", "what's in", "parts of", "components of", "anatomy" |
+| State machine / flow | ASCII boxes + arrows | "flow", "lifecycle", "data flow", "request goes through", "pipeline" |
+| Tradeoff matrix (2 axes) | 2x2 grid | "effort vs value", "risk vs reward", "score X on Y" |
+| File / code structure | Directory tree | "project layout", "where does X live", "file structure", "ls" |
+| Numeric series / progress | Sparklines `▁▂▃▄▅▆▇█` | "trend over", "growth", "performance over", "history of" |
+| Counts / proportions | Block bars `█████░░░` | "how much", "percentage", "coverage", "ratio" |
+| Single fact / single answer | Plain caveman sentence — no diagram | "what's the X", "is Y true", "default port", yes/no questions |
+
+### Trigger detection rules
+
+Apply visual format when EITHER:
+
+1. **User prompt contains a trigger phrase** from the column above
+2. **Content has natural shape** even if user didn't signal — e.g., explaining 3+ options always becomes a table even if user asked "explain my deployment options"
+
+Don't apply when:
+- Content is genuinely linear narrative (story, explanation of one concept)
+- User asked for code (code block stays code block)
+- Output would be 1-3 sentences (overhead > value)
+- Single boolean/numeric answer
+
+### Override hint
+If user types a format command: `as table`, `as tree`, `as flow`, `as chart` → use that exact format regardless of content shape detection.
 
 ### Visual primitives (confirmed render in Claude Code terminal)
 
@@ -152,6 +168,56 @@ C  ✅✅ ~8 scope ⭐
 - **lite**: "Component re-renders because you create a new object reference each render. Wrap it in `useMemo`."
 - **full**: "New object ref each render. Inline object prop = new ref = re-render. Wrap in `useMemo`."
 - **ultra**: "Inline obj prop → new ref → re-render. `useMemo`."
+
+## Theme-aware status indicators
+
+Glyph runs in dark + light themes. Some indicators read poorly in one or the other. Prefer Unicode glyphs that survive both:
+
+| Use this | Not this | Why |
+|---------|---------|-----|
+| `✅` ok / `❌` no / `⚠` warn / `⭐` pick | red/green-only ANSI | colorblind + theme-safe |
+| `→ ← ↑ ↓ ▶ ◀` for direction | "use the arrow on the right" | spatial cue, no color |
+| `▏▎▍▌▋▊▉█` for bars | colored boxes | visible on any bg |
+| `▲▼` for trend | "up/down" or arrows that mean something else | unambiguous |
+| `🔴 🟡 🟢` for severity | rely on text color alone | renders as actual disc, not text-color |
+| `[GLYPH]` text label | colored badge | screen-reader safe |
+
+**Don't** rely on ANSI color codes in skill output text — Ink's renderer owns the color pipeline and may strip or remap them. Markdown bold/italic survives; raw `\x1b[31m` does not.
+
+**Do** use:
+- Unicode emoji icons for severity/status (universal)
+- Markdown bold for emphasis (rendered by `Markdown.tsx`)
+- Code fences for monospace/highlighted code (rendered by `HighlightedCode.tsx`)
+- Tables with `|` syntax (rendered by `MarkdownTable.tsx`)
+
+## Terminal-width fallback
+
+Glyph's box-drawing visuals assume ≥80 cols. When terminal is narrower, fall back gracefully:
+
+| Width | Behavior |
+|-------|----------|
+| ≥80 cols | Full box-drawing, multi-column trees, side-by-side blocks |
+| 60-79 cols | Drop side-by-side. Stack vertically. Tables stay (Ink wraps them) |
+| <60 cols | Drop ASCII boxes entirely. Use indented bullets with `├── └──`. Tables only for ≤3 columns. |
+
+How to know width: not directly available to skill output, but assume Claude Code typical pane is 80-120 cols. If user says "narrow terminal", "small screen", "phone", "constrained" — use 60-col fallback.
+
+**Fallback example — branching at <60 cols:**
+
+```
+no width:
+            condition?
+                │
+        ┌───────┴───────┐
+       yes              no
+        │               │
+    do thing A     do thing B
+
+with <60 col fallback:
+condition?
+├── yes → do thing A
+└── no  → do thing B
+```
 
 ## Auto-clarity exceptions
 
