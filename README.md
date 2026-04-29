@@ -7,7 +7,8 @@
 </p>
 
 <p align="center">
-  <a href="#before--after">Before/After</a> •
+  <a href="#the-honest-tradeoff">Tradeoff</a> •
+  <a href="#before--after-real-prompts-real-token-counts">Before/After</a> •
   <a href="#install">Install</a> •
   <a href="#levels">Levels</a> •
   <a href="#how-it-works">How it works</a> •
@@ -31,31 +32,72 @@ A Claude Code skill/plugin that fuses two compression layers into one mode:
 │  │  drop hedging       │  boxes, sparklines, arrows    │   │
 │  │  fragments OK       │                               │   │
 │  └─────────────────────┴───────────────────────────────┘   │
-│                                                             │
-│  same accuracy. ~75% fewer tokens. 3-5x faster to scan.    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 Built on [Julius Brussee's caveman](https://github.com/JuliusBrussee/caveman) — caveman cuts words, glyph adds visual structure on top.
 
-## Before / After
+## The honest tradeoff
 
-### Comparing 3 architecture options
+Benchmarked across 8 dev prompts (Claude Opus 4.7 as judge):
 
-**Normal Claude (~600 tokens):**
-> "There are three frames you could choose. Frame A decouples the stage system from Google access, which fixes bug 1 but introduces legal risk. Frame B keeps the stage system intact and adds a new gate for demo users, which fixes bug 2 but leaves bug 1 unaddressed. Frame C uses two orthogonal gates and fixes both bugs but touches more files..."
-
-**Caveman alone (~45 tokens):**
-> "3 frames. A: decouple stage. fixes bug1, legal risk. B: stage+demo gate. fixes bug2, bug1 unfixed. C: capability+demo gates. fixes both, ~8 files. Pick C."
-
-**Glyph (~30 tokens, 2-second scan):**
 ```
-| Frame | bug1 | bug2 | files | risk    |
-|-------|------|------|-------|---------|
-| A     | ✅   | ❌   | ~5    | legal?  |
-| B     | ❌   | ✅   | ~3    | low     |
-| C ⭐  | ✅   | ✅   | ~8    | scope   |
+                   tokens     readability    format-fit
+                   ──────     ───────────    ──────────
+   normal           872          7.2            7.5
+   caveman          458 ⭐       8.4            7.8
+   glyph            495          9.0 ⭐         9.5 ⭐
 ```
+
+```
+glyph vs normal:    -43% tokens, +1.8 readability, +2.0 format-fit
+glyph vs caveman:   +8% tokens,  +0.6 readability, +1.7 format-fit
+```
+
+**Glyph is NOT the smallest output** — caveman wins that. Glyph trades a few extra tokens (visual chars: `┌─┐`, `|`, `✅`) for visual structure that's faster to scan and shape-correct.
+
+| Pick this | When |
+|-----------|------|
+| **glyph** | comparing options, branching logic, file structure, daily dev work |
+| **caveman** | minimum-token responses, single-fact answers, terminal output you'll grep |
+| **normal** | research mode where every nuance matters |
+
+Where glyph shines vs caveman (real numbers from `benchmarks/results.md`):
+
+```
+prompt              caveman    glyph     verdict
+─────────           ───────    ─────     ───────
+compare-options       571       538      glyph -33 tokens AND better
+branching-logic       564       405      glyph -159 tokens AND better
+hierarchy            1189      1275      caveman cheaper, glyph clearer
+state-flow            438       684      caveman cheaper, glyph clearer
+react-rerender        228       246      caveman wins (simple cause list)
+single-fact             2         2      tie (no diagram needed)
+```
+
+If you only need text compression, install [caveman](https://github.com/JuliusBrussee/caveman). If you want shape-aware visuals on top, install glyph.
+
+## Before / After (real prompts, real token counts)
+
+Pulled from `benchmarks/samples/results.json`. Token counts via tiktoken.
+
+### Prompt: "compare three caching strategies"
+
+**Normal Claude — 1216 tokens, prose-heavy:**
+> "When evaluating caching strategies for a high-traffic API, you have three primary options: in-memory LRU, Redis, and CDN edge cache. Each comes with distinct tradeoffs that should be weighed against your specific requirements. In-memory LRU caches store data directly within the application process, providing extremely low latency..."
+
+**Caveman — 571 tokens, terse bullets:**
+> "3 strategies. LRU: ~0.1ms, free, manual invalidation, lost on restart. Redis: ~1ms, $$, TTL+evict, network hop. CDN: ~50ms first hop, $$$, tag-based, edge cache. Pick LRU for hot path, Redis for shared state, CDN for static."
+
+**Glyph — 538 tokens, table:**
+```
+| Strategy   | Latency  | Cost  | Invalidation | Failure mode    |
+|------------|---------:|-------|--------------|-----------------|
+| LRU        | ~0.1ms   | $     | manual       | lost on restart |
+| Redis      | ~1ms     | $$    | TTL + evict  | network split   |
+| CDN edge   | ~50ms    | $$$   | tag-based    | stale at edge   |
+```
+Glyph saved 33 tokens vs caveman AND scored higher on readability (9 vs 8) and format-fit (10 vs 6) per LLM judge. Comparison content has table shape — glyph picked it.
 
 ### Explaining a re-render
 
@@ -187,28 +229,27 @@ Resume after.
 - [x] LLM-judge eval harness — readability/completeness/format-fit scores
 - [ ] Track 2 fork — custom Ink components for ` ```glyph:tree `, ` ```glyph:flow `, ` ```glyph:chart ` fenced blocks (renders native React in terminal). See `docs/track-2-fork-design.md`
 
-## Measured results
+## Reproduce the benchmarks
 
-Three-arm benchmark (8 prompts × normal / caveman / glyph). Tokens via tiktoken; quality scored by Claude as judge.
+The headline numbers in [The honest tradeoff](#the-honest-tradeoff) come from this harness:
 
-| Metric | Normal | Caveman | Glyph |
-|--------|-------:|--------:|------:|
-| Avg output tokens | 872 | 458 | 495 |
-| Tokens vs normal | — | -48% | **-43%** |
-| Readability (1-10) | 7.2 | 8.4 | **9.0** ⭐ |
-| Completeness (1-10) | **9.8** ⭐ | 8.6 | 8.6 |
-| Format-fit (1-10) | 7.5 | 7.8 | **9.5** ⭐ |
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+cd benchmarks
+uv run python llm_run.py                       # generates 8 prompts × 3 arms (~5 min)
+uv run --with tiktoken python measure.py       # tiktoken counts → results.md
+uv run --with anthropic python judge.py        # claude-as-judge → judge_results.md
+```
 
-**Read this:** glyph trades 8% more tokens than caveman for **+0.6 readability and +1.7 format-fit**. Same accuracy as caveman, far better visual structure. Both lose ~1.2 points of completeness vs normal — terse modes drop nuance.
+Outputs:
+- `benchmarks/samples/results.json` — raw three-arm outputs
+- `benchmarks/results.md` — token table per prompt + arm averages
+- `benchmarks/samples/judge.json` — readability/completeness/format-fit per prompt
+- `benchmarks/judge_results.md` — averages + per-prompt judge notes
 
-When to pick which:
-- **glyph**: scanning, comparing, deciding — the daily case
-- **caveman**: pure token efficiency on simple Q&A
-- **normal**: research-mode where every nuance matters
+Cost ~$0.50 against the Anthropic API. Run it yourself; numbers should match within ±5% (LLM-judge has variance).
 
-Honest weakness: glyph occasionally over-formats simple cause lists (forces table when prose suffices). See `benchmarks/judge_results.md` per-prompt notes.
-
-Run yourself: `cd benchmarks && uv run python llm_run.py && uv run --with tiktoken python measure.py && uv run --with anthropic python judge.py`.
+Honest weakness identified by the benchmark: glyph occasionally over-formats simple cause lists (forces table when prose suffices). SKILL.md was tightened to push back on this in v0.1.0.
 
 ## Credits
 
