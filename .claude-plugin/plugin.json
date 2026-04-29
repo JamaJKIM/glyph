@@ -1,0 +1,37 @@
+{
+  "name": "glyph",
+  "version": "0.1.0",
+  "description": "Visual + terse output mode. Caveman terseness fused with ASCII diagrams, tables, trees, sparklines. Speak less. Show more.",
+  "author": {
+    "name": "James Kim",
+    "url": "https://github.com/JamaJKIM"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/JamaJKIM/glyph",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/glyph-activate.js",
+            "timeout": 5,
+            "statusMessage": "Loading glyph mode..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/glyph-mode-tracker.js",
+            "timeout": 5,
+            "statusMessage": "Tracking glyph mode..."
+          }
+        ]
+      }
+    ]
+  }
+}

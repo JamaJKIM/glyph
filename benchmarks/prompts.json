@@ -1,0 +1,52 @@
+{
+  "prompts": [
+    {
+      "id": "compare-options",
+      "shape": "comparing 2+ options",
+      "prompt": "Compare three caching strategies for a high-traffic API: in-memory LRU, Redis, and CDN edge cache. Cover latency, cost, invalidation complexity, and failure modes.",
+      "expected_format": "table"
+    },
+    {
+      "id": "branching-logic",
+      "shape": "branching logic",
+      "prompt": "Explain JWT validation flow: check signature, check expiry, check audience claim, check issuer. Show what happens at each branch when a check fails.",
+      "expected_format": "decision tree"
+    },
+    {
+      "id": "hierarchy",
+      "shape": "hierarchy",
+      "prompt": "Describe the structure of a typical Next.js 15 app router project including routing, layouts, server components, server actions, and data fetching layers.",
+      "expected_format": "indented tree"
+    },
+    {
+      "id": "numeric-series",
+      "shape": "numeric series",
+      "prompt": "Explain bundle size growth across React versions 16, 17, 18, 19. Compare with Vue 2, 3 and Svelte 4, 5. Use approximate gzipped sizes.",
+      "expected_format": "sparklines or block bars"
+    },
+    {
+      "id": "state-flow",
+      "shape": "state machine",
+      "prompt": "Describe the OAuth 2.0 authorization code flow including PKCE: redirect, code exchange, token refresh.",
+      "expected_format": "boxes + arrows"
+    },
+    {
+      "id": "single-fact",
+      "shape": "single fact (control — should NOT add diagram)",
+      "prompt": "What's the default port for PostgreSQL?",
+      "expected_format": "plain caveman sentence"
+    },
+    {
+      "id": "react-rerender",
+      "shape": "single explanation",
+      "prompt": "Why does my React component re-render every time the parent renders, even though I'm using React.memo?",
+      "expected_format": "plain caveman sentence"
+    },
+    {
+      "id": "tradeoff-matrix",
+      "shape": "2-axis tradeoff",
+      "prompt": "Help me pick between SQLite, Postgres, and DynamoDB for a new SaaS. Score each on dev experience, scaling ceiling, cost-at-scale, ops complexity.",
+      "expected_format": "table or 2x2"
+    }
+  ]
+}

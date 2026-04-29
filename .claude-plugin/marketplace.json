@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "glyph",
+  "description": "Visual + terse output mode for Claude Code. Cuts ~75% tokens (caveman lineage) AND replaces prose with ASCII diagrams, tables, trees, sparklines. 3-5x faster to scan.",
+  "owner": {
+    "name": "James Kim",
+    "url": "https://github.com/JamaJKIM"
+  },
+  "plugins": [
+    {
+      "name": "glyph",
+      "description": "Speak less. Show more. Caveman terseness + visual structure in one mode.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
