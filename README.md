@@ -181,12 +181,34 @@ Resume after.
 ## Roadmap
 
 - [x] Track 1 — skill + hooks (works on stock CC)
-- [x] glyph-commit — terse + visual commit messages
-- [x] glyph-review — one-line PR comments with severity icons
+- [x] glyph-commit, glyph-review, glyph-debug, glyph-status, glyph-scaffold skills
 - [x] Benchmark harness — three-arm prompt suite + tiktoken measurement
-- [ ] Run benchmarks + publish numbers
-- [ ] LLM-judge eval harness ("more readable?")
+- [x] Run benchmarks + publish numbers (see [Measured results](#measured-results) below)
+- [x] LLM-judge eval harness — readability/completeness/format-fit scores
 - [ ] Track 2 fork — custom Ink components for ` ```glyph:tree `, ` ```glyph:flow `, ` ```glyph:chart ` fenced blocks (renders native React in terminal). See `docs/track-2-fork-design.md`
+
+## Measured results
+
+Three-arm benchmark (8 prompts × normal / caveman / glyph). Tokens via tiktoken; quality scored by Claude as judge.
+
+| Metric | Normal | Caveman | Glyph |
+|--------|-------:|--------:|------:|
+| Avg output tokens | 872 | 458 | 495 |
+| Tokens vs normal | — | -48% | **-43%** |
+| Readability (1-10) | 7.2 | 8.4 | **9.0** ⭐ |
+| Completeness (1-10) | **9.8** ⭐ | 8.6 | 8.6 |
+| Format-fit (1-10) | 7.5 | 7.8 | **9.5** ⭐ |
+
+**Read this:** glyph trades 8% more tokens than caveman for **+0.6 readability and +1.7 format-fit**. Same accuracy as caveman, far better visual structure. Both lose ~1.2 points of completeness vs normal — terse modes drop nuance.
+
+When to pick which:
+- **glyph**: scanning, comparing, deciding — the daily case
+- **caveman**: pure token efficiency on simple Q&A
+- **normal**: research-mode where every nuance matters
+
+Honest weakness: glyph occasionally over-formats simple cause lists (forces table when prose suffices). See `benchmarks/judge_results.md` per-prompt notes.
+
+Run yourself: `cd benchmarks && uv run python llm_run.py && uv run --with tiktoken python measure.py && uv run --with anthropic python judge.py`.
 
 ## Credits
 
