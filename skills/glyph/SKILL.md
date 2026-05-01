@@ -59,6 +59,7 @@ Pick format from content shape, not personal style:
 | Architecture diagram (≥5 nodes) | **excalidraw-mcp** (opens browser preview) | "architecture", "system design", "draw the system" |
 | Sequence / flow (≥4 actors) | **mermaid via mermaid-mcp** | "sequence diagram", "render mermaid", "show the flow visually" |
 | Single fact / single answer | Plain caveman sentence — no diagram | "what's the X", "is Y true", "default port", yes/no questions |
+| **Multi-component design / refactor** | **whiteboard template** (see Common shapes) | "design", "redesign", "architect", "refactor", "rewrite", "restructure", "what's the issue and (how do we) fix it", "approach for", "plan for", "build order", "current vs new", "before and after" |
 
 ### Trigger detection rules
 
@@ -465,6 +466,98 @@ User asks "what's the default port?" / "is X true?".
 [1] bare answer                  (one sentence; no table, no diagram)
 ```
 
+### whiteboard
+
+User asks "design X", "refactor Y", "what's the issue and how do
+we fix it", or any multi-component change. **DEFAULT for design-shaped
+requests** — don't wait for "give me a visual."
+
+Programming starts at the whiteboard. This template recreates the
+whiteboard in ASCII: problem → current vs new → component map →
+build order → fix one-liner.
+
+Composition (top to bottom):
+
+**[1] PROBLEM box** — heavy outer rule, ≤3 lines
+
+```
+┌──────────────────────────────────────────────────────┐
+│ PROBLEM: <one-line symptom>                          │
+│ <2-3 supporting lines, terse>                        │
+└──────────────────────────────────────────────────────┘
+```
+
+**[2] CURRENT vs NEW** — two parallel vertical chains, side-by-side
+
+```
+CURRENT (broken)              NEW (vX.Y.Z)
+═════════════════              ═══════════
+Step 1                         Step 1
+   │                              │
+   ▼                              ▼
+Step 2 (broken)                F1: read signal
+   │                              │
+   ▼                              ▼
+User gives up                  F3: drop abstract
+                                  ▼
+                               ...continues
+```
+
+Use `═══` (heavy double) for section underlines. Not `───`.
+
+**[3] FEATURE MAP** — labeled boxes with action tags + feeds arrows
+
+```
+┌────────────────────────────────┐
+│  F1  _SNAKE_CASE_NAME    NEW   │ ◀── annotation pointing in
+│      key behavior summary      │     (rationale, source)
+└────────┬────────────────┬──────┘
+         │                │
+   feeds │                │ feeds
+         ▼                ▼
+┌──────────────────┐  ┌──────────────────┐
+│ F2 _NAME  MODIFY │  │ F4 _NAME REWRITE │
+│   diff details   │  │   old: ...       │
+│                  │  │   new: ...       │
+└──────────────────┘  └──────────────────┘
+```
+
+Action tags after feature name: `NEW`, `MODIFY`, `REWRITE`,
+`RENAME`, `REMOVE`, `KEEP`. Box header line 1 = "F#  _NAME  TAG".
+Box body = behavior diff, sub-cases, examples. Use inline tree
+(`├─ … / └─ …`) for enumerated sub-cases inside a box.
+
+**[4] BUILD ORDER** — swim-lane batches, dependency-driven
+
+```
+Batch 1                Batch 2                Batch 3
+───────                ───────                ───────
+ F1 ──────┐
+ F2 ◀──F1 │
+ F3       │
+          ├──▶  F4 ◀── F1
+          │     F5 ──┐
+          │     F6 ◀─┘
+          └────────────────────▶  F7
+```
+
+Cross-lane wires (`──┐` / `◀──` / `──▶`) show dependencies that
+span batches. Rule: feature enters Batch N only if all its
+dependencies are in Batches 1..N-1.
+
+**[5] Issue / Fix one-liners** — bold contrast pair, closes the doc
+
+```
+**Issue in one line:** <symptom restated, plain prose>
+**Fix in one line:**   <solution restated, plain prose>
+```
+
+Use full intensity. Most token-heavy template — only fires for
+multi-component design work where visual payoff exceeds cost.
+Don't fire for: single bug fix (→ debug-diagnosis), one option
+vs other (→ option-pick), yes/no (→ single-fact), "explain how
+X works" (→ explain-system, smaller).
+
 ## Composing the response
 
 Default mental loop runs **per block**, not per response:
@@ -480,3 +573,5 @@ for each paragraph/section in your reply:
 A response = stack of blocks. Each block is independent. Don't let one prose block force the rest of the reply into prose. Don't let one table force unrelated content into rows.
 
 When in doubt, match a Common shape above and decompose accordingly.
+
+**Special case — whiteboard default for design requests.** If the user prompt matches whiteboard triggers (design / refactor / redesign / architect / rewrite / restructure / "what's the issue and fix" / "approach for" / "plan for" / "build order" / multi-component change), use the whiteboard template **by default**. Don't wait for the user to say "give me a visual." Programming starts at the whiteboard — make that the default surface for design-shaped work.
