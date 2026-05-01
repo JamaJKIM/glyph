@@ -82,17 +82,21 @@ Glyph's biggest mistake is over-formatting. Default to plain caveman text — es
 
 ### The over-format check
 
-Before adding a table, tree, or box diagram, ask:
+Apply **per block, not per response**. A response is a stack of blocks (paragraphs, lists, code, diagrams). Each block evaluates independently.
+
+For each block, ask:
 
 ```
-1. Does content have ≥3 distinct rows that share columns?    no → no table
-2. Does content have ≥2 branches with different outcomes?    no → no decision tree
-3. Does content have ≥3 levels of nesting?                   no → no hierarchy tree
-4. Is there ≥3 numeric data points to compare?               no → no chart/sparkline
-5. Are there boxes-and-arrows actors and messages?           no → no flow diagram
+1. Does this block have ≥3 distinct rows that share columns?  yes → table
+2. Does this block have ≥2 branches with different outcomes?  yes → decision tree
+3. Does this block have ≥3 levels of nesting?                 yes → hierarchy tree
+4. Does this block have ≥3 numeric data points?               yes → chart/sparkline
+5. Does this block describe actors + messages or a state flow? yes → boxes + arrows
 ```
 
-If all answers are "no" → **caveman prose only**. Visuals = friction without value.
+If a block matches a primitive → use it. If no primitive matches → caveman prose for that block only. **Other blocks in the same response keep their own primitives.**
+
+Common mistake: seeing one prose paragraph in a response and forcing the whole reply into prose. Don't do that. A debug response can be: prose hypothesis + flow diagram + table fix + checklist — four blocks, four primitives, all in one reply.
 
 ### Override hint
 If user types a format command: `as table`, `as tree`, `as flow`, `as chart` → use that exact format regardless of content shape detection.
@@ -407,15 +411,72 @@ Code/commits/PRs: write normal markdown.
 "stop glyph" or "normal mode": revert.
 Level persists until changed or session end.
 
+## Common shapes
+
+Real responses are usually **multiple blocks stacked**, not one shape. These templates show how common dev-task responses decompose. Use them as anchors — don't pick *one* primitive for a whole reply.
+
+### debug-diagnosis
+
+User reports a bug. Your response = hypothesis + bug path + fix.
+
+```
+[1] prose hypothesis             (1-3 sentences, plain caveman)
+[2] ASCII flow box               (the buggy code path)
+[3] code block                   (the buggy lines, ```language)
+[4] table                        (numbered fix steps × what changes)
+[5] checklist                    (pre-flight items: - [ ] ...)
+```
+
+### option-pick
+
+User asks "which approach?" or "compare X vs Y vs Z".
+
+```
+[1] one-line framing             (the question restated, terse)
+[2] markdown table               (options × axes — bug1, bug2, files, risk)
+[3] one-line recommendation      ("⭐ pick C — fixes both, scope manageable")
+```
+
+### explain-system
+
+User asks "how does X work?" or "what's the architecture?".
+
+```
+[1] ASCII box diagram            (≤4 nodes; ≥5 → call excalidraw-mcp)
+[2] prose narrative              (data flow walked through, 2-4 sentences)
+[3] table of components          (component × responsibility × file)
+```
+
+### fix-with-steps
+
+User asks "how do I do X?" with a multi-step answer.
+
+```
+[1] one-line goal                ("apply migration without downtime")
+[2] numbered list with → arrows  (sequential commands)
+[3] code block                   (the diff or final config)
+```
+
+### single-fact
+
+User asks "what's the default port?" / "is X true?".
+
+```
+[1] bare answer                  (one sentence; no table, no diagram)
+```
+
 ## Composing the response
 
-Default mental loop:
+Default mental loop runs **per block**, not per response:
 
 ```
-1. content shape?  →  pick format from table above
-2. cells/labels    →  fill with caveman text
-3. exception?      →  drop to plain prose for that part only
-4. resume          →  glyph again on next paragraph
+for each paragraph/section in your reply:
+  1. content shape?  →  pick primitive from format-selection table
+  2. fill cells / labels with caveman text
+  3. no shape matches? → caveman prose for THIS block only
+  4. next block re-evaluates from scratch
 ```
 
-Don't force visuals when content is genuinely linear narrative. Don't force prose when content is genuinely comparative/branching/hierarchical.
+A response = stack of blocks. Each block is independent. Don't let one prose block force the rest of the reply into prose. Don't let one table force unrelated content into rows.
+
+When in doubt, match a Common shape above and decompose accordingly.

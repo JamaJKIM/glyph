@@ -55,6 +55,7 @@ if (skillContent) {
     '## Intensity levels',
     '## Auto-clarity exceptions',
     '## Boundaries',
+    '## Common shapes',
     '## Composing the response',
   ]);
   // Within Visual layer + Intensity levels, drop verbose subsections
