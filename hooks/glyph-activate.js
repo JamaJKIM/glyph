@@ -40,8 +40,52 @@ let output;
 if (skillContent) {
   const body = skillContent.replace(/^---[\s\S]*?---\s*/, '');
 
+  // Slice to behavior-anchoring sections only.
+  // Caveman SKILL.md is ~3.6KB and inlines whole; ours is ~19KB and
+  // overflows CC's hook-output threshold (~15KB). When that happens
+  // the hook stdout is saved to disk and only a 2KB preview reaches
+  // the model — most rules never land, so behavior drifts.
+  // Keep the rule-anchoring H2s; drop the visual-primitives reference
+  // (ASCII art, ANSI codes, terminal fallback) that loads on demand
+  // when the user invokes /glyph or asks about format choice.
+  const KEEP_H2 = new Set([
+    '## Persistence',
+    '## Lexical layer (caveman rules)',
+    '## Visual layer (format-selection rule)',
+    '## Intensity levels',
+    '## Auto-clarity exceptions',
+    '## Boundaries',
+    '## Composing the response',
+  ]);
+  // Within Visual layer + Intensity levels, drop verbose subsections
+  const SKIP_H3_PREFIX = [
+    '### Visual primitives', // 100+ lines of ASCII reference
+    '### Example',           // long worked examples in Intensity levels
+  ];
+
+  const sliceLines = [];
+  let keepingH2 = false;
+  let skippingH3 = false;
+  for (const line of body.split('\n')) {
+    if (line.startsWith('## ')) {
+      // New H2 → reset H3 skip + decide keep/drop by allowlist
+      const heading = line.trim();
+      keepingH2 = KEEP_H2.has(heading);
+      skippingH3 = false;
+      if (keepingH2) sliceLines.push(line);
+      continue;
+    }
+    if (line.startsWith('### ')) {
+      skippingH3 = SKIP_H3_PREFIX.some(p => line.startsWith(p));
+      if (keepingH2 && !skippingH3) sliceLines.push(line);
+      continue;
+    }
+    if (keepingH2 && !skippingH3) sliceLines.push(line);
+  }
+  const slicedBody = sliceLines.join('\n');
+
   // Filter intensity table: keep header rows + only active level row
-  const filtered = body.split('\n').reduce((acc, line) => {
+  const filtered = slicedBody.split('\n').reduce((acc, line) => {
     const tableRowMatch = line.match(/^\|\s*\*\*(\S+?)\*\*\s*\|/);
     if (tableRowMatch) {
       if (tableRowMatch[1] === mode) acc.push(line);
